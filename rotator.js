@@ -30,16 +30,16 @@
 
   if (isIE && !hasCanvas) {
     Rotator.prototype.createVMLNode = (function () {
-      D.createStyleSheet().addRule(".rvml", "behavior:url(#default#VML)");
+      D.createStyleSheet().addRule(".msvml", "behavior:url(#default#VML)");
       
       try {
-        !D.namespaces.rvml && D.namespaces.add("rvml", "urn:schemas-microsoft-com:vml");
+        !D.namespaces.msvml && D.namespaces.add("msvml", "urn:schemas-microsoft-com:vml");
         return function (tagName) {
-            return D.createElement('<rvml:' + tagName + ' class="rvml">');
+            return D.createElement('<msvml:' + tagName + ' class="msvml">');
         };
       } catch (e) {
         return function (tagName) {
-            return D.createElement('<' + tagName + ' xmlns="urn:schemas-microsoft.com:vml" class="rvml">');
+            return D.createElement('<' + tagName + ' xmlns="urn:schemas-microsoft.com:vml" class="msvml">');
         };
       }
     }());
