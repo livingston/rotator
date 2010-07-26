@@ -1,0 +1,3 @@
+A cross-browser, framework independent JavaScript class for Image Rotation.
+
+Implemented using VML for IE and Canvas for other browsers.
