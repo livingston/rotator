@@ -94,6 +94,8 @@
 
         self.angle = angle;
         self.canvas.style.rotation = angle;
+
+        return self;
       }
     } else if (hasCanvas) {
       return function (angle) {
@@ -110,16 +112,37 @@
         self.context.translate(-width/2,-height/2);
         self.context.drawImage(self.image, 0, 0);
         self.context.restore();
+
+        return self;
       }
     }
   }());
 
   Rotator.prototype.restore = function () {
-    this.rotate(0)
+    this.rotate(0);
+
+    return this;
+  };
+
+  Rotator.prototype.rotateLeft = function (angle) {
+    var self = this;
+
+    self.rotate(parseInt(self.angle, 10) - angle);
+
+    return self;
+  };
+
+  Rotator.prototype.rotateRight = function (angle) {
+    var self = this;
+
+    self.rotate(parseInt(self.angle, 10) + angle);
+
+    return self;
   };
 
   Rotator.prototype.unload = function () {
     this.image = null;
+    this.context = null;
     this.canvas = null;
     this.holder = null;
   };
