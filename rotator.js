@@ -1,27 +1,31 @@
-(function (W, D) {
-  var isIE = /*@cc_on!@*/0, hasCanvas = !!D.createElement('canvas').getContext,
-      Rotator = function (elemRef) {
-        if (elemRef.nodeName.toLowerCase() !== 'img') {
-          throw new Error('The Element referenced is not an image')
+(function (window, document) {
+  var isIE = /*@cc_on!@*/0, hasCanvas = !!document.createElement('canvas').getContext,
+      Rotator = function Rotator (elemRef) {
+        if (!(this instanceof arguments.callee)) {
+          throw new Error('This is not an instance of the class Rotator. Use "new" to create an instance')
         }
-        
+
+        if (!elemRef || elemRef.nodeName.toLowerCase() !== 'img') {
+          throw new SyntaxError('The Element referenced is not an image')
+        }
+
         var self = this;
-        
+
         self.image = elemRef;
         self.angle = 0;
-        
-        Bind(D.getElementsByTagName('body')[0], 'unload', function () { self.unload() }, false);
-        
+
+        Bind(document.getElementsByTagName('body')[0], 'unload', function () { self.unload() }, false);
+
         //Bind(elemRef, 'load', function () { self.init() }, false);
         self.init();
         elemRef = null;
       },
       Bind = (function () {
-        if (D.addEventListener) {
+        if (document.addEventListener) {
           return function (elem, evt, fn, bubble) {
             elem.addEventListener(evt, fn, bubble || false);
           }
-        } else if (D.attachEvent) {
+        } else if (document.attachEvent) {
           return function (elem, evt, fn) {
             elem.attachEvent('on' + evt, fn);
           }
@@ -30,35 +34,35 @@
 
   if (isIE && !hasCanvas) {
     Rotator.prototype.createVMLNode = (function () {
-      D.createStyleSheet().addRule(".msvml", "behavior:url(#default#VML)");
-      
+      document.createStyleSheet().addRule(".msvml", "behavior:url(#default#VML)");
+
       try {
-        !D.namespaces.msvml && D.namespaces.add("msvml", "urn:schemas-microsoft-com:vml");
-        return function (tagName) {
-            return D.createElement('<msvml:' + tagName + ' class="msvml">');
-        };
+        !document.namespaces.msvml && document.namespaces.add("msvml", "urn:schemas-microsoft-com:vml");
+        return function () {
+            return document.createElement('<msvml:image class="msvml">');
+        }
       } catch (e) {
-        return function (tagName) {
-            return D.createElement('<' + tagName + ' xmlns="urn:schemas-microsoft.com:vml" class="msvml">');
-        };
+        return function () {
+            return document.createElement('<image xmlns="urn:schemas-microsoft.com:vml" class="msvml">');
+        }
       }
     }());
   }
-    
+
   Rotator.prototype.init = function () {
     var self = this,
         img = self.image,
         src = img.src,
         width = img.width,
         height = img.height;
-        
-    self.holder = D.createElement('span');
-    
+
+    self.holder = document.createElement('span');
+
     self.holder.style.position = 'relative';
     self.holder.style.display = 'inline-block';
-    
+
     img.parentNode.insertBefore(self.holder, img);
-    
+
     if (isIE && !hasCanvas) {
       self.canvas = self.createVMLNode('image');
       self.canvas.style.height = height + 'px';
@@ -68,14 +72,14 @@
       self.canvas.style.top = '0px';
       self.canvas.style.left = '0px';
       self.canvas.style.position = 'absolute';
-      
+
       self.canvas.src = src;
     } else {
-      self.canvas = D.createElement('canvas');
+      self.canvas = document.createElement('canvas');
       self.canvas.height = height;
       self.canvas.width = width;
       self.context = self.canvas.getContext('2d');
-      
+
       self.rotate(0);
     }
 
@@ -87,7 +91,7 @@
     if (isIE && !hasCanvas) {
       return function (angle) {
         var self = this;
-        
+
         self.angle = angle;
         self.canvas.style.rotation = angle;
       }
@@ -96,10 +100,10 @@
         var self = this,
             width = self.image.width,
             height = self.image.height;
-        
+
         self.angle = angle;
         angle = (angle%360) * Math.PI / 180;
-        
+
         self.context.save();
         self.context.translate(width/2,height/2)
         self.context.rotate(angle);
@@ -120,6 +124,6 @@
     this.holder = null;
   };
 
-  W.Rotator = Rotator;
-  W.Bind = Bind;
+  window.Rotator = Rotator;
+  window.Bind = Bind;
 }(window, document));
